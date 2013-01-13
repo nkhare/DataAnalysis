@@ -1,0 +1,15 @@
+Needed Packages 
+	1. python 2.7
+	2. pandas
+	
+To partition the data in any one of the column 
+run following command :-
+
+$ python partition.py <csv_file> <field_in_which_you_want_to_partition> <dir_to_save_data>
+
+Like
+$ python partition.py 2012Batch1.csv Name dirName
+
+$ python partition.py 2012Batch1.csv Gender Genderwise
+
+$ python partition.py 2012Batch1.csv District\ Name District
