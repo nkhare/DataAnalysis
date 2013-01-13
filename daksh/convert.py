@@ -40,11 +40,20 @@ def changePerf(val):
 		val = 3
 	return val
 
+def normalize(x):
+	A = 1
+	B = 9	
+	a = 1
+	b = 10
+	norm = a + (((x - A) * ( b - a))/(B - A))
+	return norm
+
 
 def updatePerf(imp, perf):
 	imp = imp.apply(changeImp)
 	perf = perf.apply(changePerf)
-	return imp * perf
+	norm = normalize(imp * perf)
+	return norm
 
 
 filename = sys.argv[1]
