@@ -13,3 +13,53 @@ $ python partition.py 2012Batch1.csv Name dirName
 $ python partition.py 2012Batch1.csv Gender Genderwise
 
 $ python partition.py 2012Batch1.csv District\ Name District
+
+Selecting with Demographic Info
+==============================
+1. Create the first Level 
+$  python partition.py 2012Batch1.csv Candidate\ Name <Output Dir>
+
+2. Select with Religion, Genden for above create first Level 
+$ python partitionTwoField.py 2012Batch1.csv Candidate\ Name,Religion <Output Dir>
+$ python partitionTwoField.py 2012Batch1.csv Candidate\ Name,Gender <Output Dir>
+
+This would create something like following:-
+
+ANGARA_S
+│   ├── ANGARA_S
+│   ├── ANGARA_S_highToLow.csv
+│   ├── ANGARA_S_lowToigh.csv
+│   ├── ANGARA_S_updated.csv
+│   ├── Gender
+│   │   ├── Female
+│   │   │   ├── ANGARA_S
+│   │   │   ├── ANGARA_S_highToLow.csv
+│   │   │   ├── ANGARA_S_lowToigh.csv
+│   │   │   └── ANGARA_S_updated.csv
+│   │   └── Male
+│   │       ├── ANGARA_S
+│   │       ├── ANGARA_S_highToLow.csv
+│   │       ├── ANGARA_S_lowToigh.csv
+│   │       └── ANGARA_S_updated.csv
+│   └── Religion
+│       ├── CHRISTIAN
+│       │   ├── ANGARA_S
+│       │   ├── ANGARA_S_highToLow.csv
+│       │   ├── ANGARA_S_lowToigh.csv
+│       │   └── ANGARA_S_updated.csv
+│       ├── HINDU
+│       │   ├── ANGARA_S
+│       │   ├── ANGARA_S_highToLow.csv
+│       │   ├── ANGARA_S_lowToigh.csv
+│       │   └── ANGARA_S_updated.csv
+│       ├── MUSLIM
+│       │   ├── ANGARA_S
+│       │   ├── ANGARA_S_highToLow.csv
+│       │   ├── ANGARA_S_lowToigh.csv
+│       │   └── ANGARA_S_updated.csv
+│       └── OTHERS
+│           ├── ANGARA_S
+│           ├── ANGARA_S_highToLow.csv
+│           ├── ANGARA_S_lowToigh.csv
+│           └── ANGARA_S_updated.csv
+
