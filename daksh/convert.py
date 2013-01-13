@@ -148,6 +148,9 @@ print lowTohigh
 highToLowFilename = filename + "_highToLow.csv"
 lowTohighFilename = filename + "_lowToigh.csv"
 
+highToLowFilenameImg = filename + "_highToLow.png"
+lowTohighFilenameImg = filename + "_lowToigh.png"
+
 with open(highToLowFilename,'wb') as f: 
 	header = "issue" + "," + "score" + "\n"
 	f.write(header)
@@ -155,6 +158,8 @@ with open(highToLowFilename,'wb') as f:
 		line = key + "," + str(highToLow[key]) + "\n"
 		f.write(line)
 	f.close()
+	cmd = "Rscript genGraph.R " + highToLowFilename + " " + highToLowFilenameImg
+	os.system(cmd)
 
 with open(lowTohighFilename,'wb') as f: 
 	header = "issue" + "," + "score" + "\n"
@@ -163,3 +168,5 @@ with open(lowTohighFilename,'wb') as f:
 		line = key + "," + str(lowTohigh[key]) + "\n"
 		f.write(line)
 	f.close()
+	cmd = "Rscript genGraph.R " + lowTohighFilename + " " + lowTohighFilenameImg
+	os.system(cmd)
