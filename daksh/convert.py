@@ -48,12 +48,12 @@ def normalize(x):
 	norm = a + (((x - A) * ( b - a))/(B - A))
 	return norm
 
-
 def updatePerf(imp, perf):
 	imp = imp.apply(changeImp)
 	perf = perf.apply(changePerf)
 	norm = normalize(imp * perf)
 	return norm
+
 
 
 filename = sys.argv[1]
@@ -137,7 +137,10 @@ from collections import OrderedDict
 
 for point in impPerfList:
 	p = point.split("*")[0].split(":")[1].strip()	
-	d [p] = df[point].mean()
+	if df[point].count() > 5:
+		d [p] = df[point].mean()
+	else:
+		d [p] = 0
 
 highToLow = OrderedDict(sorted(d.items(), key=lambda x: x[1], reverse=True))
 lowTohigh = OrderedDict(sorted(d.items(), key=lambda x: x[1]))

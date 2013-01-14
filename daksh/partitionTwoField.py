@@ -23,7 +23,8 @@ for splitBy,group in gSplitby:
 	firstLevel = splitBy[0]
 	firstLevel = firstLevel.replace(" ", "_")
 	secondLevel = l[1].replace(" ", "_")
-	path = os.path.join(dirForOutput, firstLevel, secondLevel, splitBy[1])
+	s = splitBy[1].replace(" ", "_")
+	path = os.path.join(dirForOutput, firstLevel, secondLevel, s)
 	os.makedirs(path)
 	filename = os.path.join(path, splitBy[0])
 	filename = filename.replace(" ", "_")
