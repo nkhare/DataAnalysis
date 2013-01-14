@@ -55,7 +55,6 @@ def updatePerf(imp, perf):
 	return norm
 
 
-
 filename = sys.argv[1]
 print filename
 data = read_csv(filename)
@@ -137,7 +136,7 @@ from collections import OrderedDict
 
 for point in impPerfList:
 	p = point.split("*")[0].split(":")[1].strip()	
-	if df[point].count() > 5:
+	if df[point].count() >= 5:
 		d [p] = df[point].mean()
 	else:
 		d [p] = 0
