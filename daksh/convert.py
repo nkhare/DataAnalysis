@@ -2,9 +2,40 @@ import pandas as pd
 from pandas  import DataFrame
 from pandas  import read_csv
 from pandas  import Series
-import sys
 import os
+import csv
+import sys
+from pylab import *
+import matplotlib
 
+
+def genGraph(fileName, topn, imageFilename):
+    issues = []
+    ratings = []
+    f = open(fileName)
+    reader = csv.reader(f)
+    reader.next() # neglect headers
+    for issue, rating in reader:
+        issues.append(issue)
+        ratings.append(float(rating))
+    labels = issues[0:topn] # take top n values
+    data =   ratings[0:topn]
+    x = arange(1, len(data)+1)
+    print labels
+    print data
+    colour = ['#373737', '#696969','#989898','#CDCDCD','#D2D2D2', '#e6e6e6']
+#    labels = ['a','b','c','d','e']
+    fig = plt.figure()
+    fig.subplots_adjust(right=0.7)
+    ax = plt.subplot(111)
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    ax.bar(x, data,color=colour)
+    legend(labels,prop={'size':8}, loc='center', bbox_to_anchor=(1.4,0.8))
+    ax.set_xlabel("Issues")
+    ax.set_ylabel("Score (out of 10)")
+#    plt.show()
+    plt.savefig(imageFilename)
 
 def changeImp(val):
 	if val == 'L':
@@ -160,8 +191,7 @@ with open(highToLowFilename,'wb') as f:
 		line = key + "," + str(highToLow[key]) + "\n"
 		f.write(line)
 	f.close()
-	cmd = "Rscript genGraph.R " + highToLowFilename + " " + highToLowFilenameImg
-	os.system(cmd)
+	genGraph(highToLowFilename, 6, highToLowFilenameImg)
 
 with open(lowTohighFilename,'wb') as f: 
 	header = "issue" + "," + "score" + "\n"
@@ -170,5 +200,4 @@ with open(lowTohighFilename,'wb') as f:
 		line = key + "," + str(lowTohigh[key]) + "\n"
 		f.write(line)
 	f.close()
-	cmd = "Rscript genGraph.R " + lowTohighFilename + " " + lowTohighFilenameImg
-	os.system(cmd)
+	genGraph(lowTohighFilename, 6, lowTohighFilenameImg)
