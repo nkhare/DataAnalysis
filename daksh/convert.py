@@ -7,83 +7,7 @@ import csv
 import sys
 from pylab import *
 import matplotlib
-
-
-def genGraph(fileName, topn, imageFilename):
-    issues = []
-    ratings = []
-    f = open(fileName)
-    reader = csv.reader(f)
-    reader.next() # neglect headers
-    for issue, rating in reader:
-        issues.append(issue)
-        ratings.append(float(rating))
-    labels = issues[0:topn] # take top n values
-    data =   ratings[0:topn]
-    x = arange(1, len(data)+1)
-    print labels
-    print data
-    colour = ['#373737', '#696969','#989898','#CDCDCD','#D2D2D2', '#e6e6e6']
-#    labels = ['a','b','c','d','e']
-    fig = plt.figure()
-    fig.subplots_adjust(right=0.7)
-    ax = plt.subplot(111)
-    box = ax.get_position()
-    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-    ax.bar(x, data,color=colour)
-    legend(labels,prop={'size':8}, loc='center', bbox_to_anchor=(1.4,0.8))
-    ax.set_xlabel("Issues")
-    ax.set_ylabel("Score (out of 10)")
-#    plt.show()
-    plt.savefig(imageFilename)
-
-def changeImp(val):
-	if val == 'L':
-		val = 1
-	if val == 'M':
-		val = 2
-	if val == 'H':
-		val = 3
-	if val == 'L-M':
-		val = 2
-	if val == 'M-H':
-		val = 3
-	if val == 'L-H':
-		val = 3
-	if val == 'L-M-H':
-		val = 3
-	return val
-
-def changePerf(val):
-	if val == 'B':
-		val = 1
-	if val == 'A':
-		val = 2
-	if val == 'G':
-		val = 3
-	if val == 'B-A':
-		val = 2
-	if val == 'A-G':
-		val = 3
-	if val == 'B-G':
-		val = 3
-	if val == 'B-A-G':
-		val = 3
-	return val
-
-def normalize(x):
-	A = 1
-	B = 9	
-	a = 1
-	b = 10
-	norm = a + (((x - A) * ( b - a))/(B - A))
-	return norm
-
-def updatePerf(imp, perf):
-	imp = imp.apply(changeImp)
-	perf = perf.apply(changePerf)
-	norm = normalize(imp * perf)
-	return norm
+from utils import *
 
 
 filename = sys.argv[1]
@@ -146,8 +70,6 @@ perfList = ["PERF: Easier access to drinking water",
 	"PERF: Training for Jobs",
 	"PERF: Others.1" ] 
 
-#print len(impList)
-#print len(perfList)
 
 impPerfList = []
 
@@ -158,46 +80,57 @@ for point in range(0, len(impList)):
 	df[impPerf] = Series(updatePerf(df[impList[point]], df[perfList[point]]), index=df.index)
 
 updatedFile = filename + "_updated.csv"
-print updatedFile
 df.to_csv(updatedFile)
 
-d = {}
+scores = {}
 
 from collections import OrderedDict
 
 for point in impPerfList:
 	p = point.split("*")[0].split(":")[1].strip()	
 	if df[point].count() >= 5:
-		d [p] = df[point].mean()
+		scores [p] = round(df[point].mean(),2)
 	else:
-		d [p] = 0
+		scores [p] = 0
 
-highToLow = OrderedDict(sorted(d.items(), key=lambda x: x[1], reverse=True))
-lowTohigh = OrderedDict(sorted(d.items(), key=lambda x: x[1]))
 
-print highToLow
-print lowTohigh 
+overallScore = round(getOvelallscore(scores),0)
+print overallScore
 
-highToLowFilename = filename + "_highToLow.csv"
-lowTohighFilename = filename + "_lowToigh.csv"
+report = OrderedDict(sorted(scores.items(), key=lambda x: x[1], reverse=True))
 
-highToLowFilenameImg = filename + "_highToLow.png"
-lowTohighFilenameImg = filename + "_lowToigh.png"
+header = "District Name, Name, Party, Name, MLA's Caste Not Imp. (%), MLA's Caste Imp.(%), MLA's Caste Very Imp.(%),  Accessibility, Trustworthiness, Overall Score, Issue, Score"   + '\n'
 
-with open(highToLowFilename,'wb') as f: 
-	header = "issue" + "," + "score" + "\n"
-	f.write(header)
-	for key in highToLow.keys():
-		line = key + "," + str(highToLow[key]) + "\n"
-		f.write(line)
-	f.close()
-	genGraph(highToLowFilename, 6, highToLowFilenameImg)
+line = df.ix[2]
+infoList = ['District Name', 'Name', 'Party','Candidate Name']
+info = getinfo(line, infoList)
 
-with open(lowTohighFilename,'wb') as f: 
-	header = "issue" + "," + "score" + "\n"
-	f.write(header)
-	for key in lowTohigh.keys():
-		line = key + "," + str(lowTohigh[key]) + "\n"
-		f.write(line)
-	f.close()
-	genGraph(lowTohighFilename, 6, lowTohighFilenameImg)
+
+castesImportance=df.groupby('Candidates Caste')
+d2 = castesImportanceCount(castesImportance.size())
+print d2
+castesImportancePct = calPercentage(d2)
+
+#print report
+Accessibility = getKey(report,'Accessibility of MLA/MP')
+Trustworthiness = getKey(report, 'Trustworthiness of MLA')
+removeKey(report,'Accessibility of MLA/MP')
+removeKey(report, 'Trustworthiness of MLA')
+
+print Accessibility
+print Trustworthiness
+
+firstLine = info['District Name'] + "," + info['Name'] + "," + info['Party'] + "," + info['Candidate Name'] + ',' + str(castesImportancePct['NI']) + ',' +str(castesImportancePct['I']) + ',' +str(castesImportancePct['VI']) +','+ str(Accessibility)  + ',' + str(Trustworthiness) + ',' +str(overallScore) + ',,' + '\n'
+
+titleGraph = "Issues vs Perfomance (Higher is better)"
+reportFilename = filename + "_report.xls"
+reportFilenameImg = filename + "_report.png"
+writeFile(reportFilename, report, header, firstLine)
+genGraph(report, 6, reportFilenameImg, titleGraph)
+
+#lowTohigh = OrderedDict(sorted(d.items(), key=lambda x: x[1]))
+#lowTohighFilename = filename + "_lowToigh.csv"
+#lowTohighFilenameImg = filename + "_lowToigh.png"
+#writeFile(lowTohighFilename, lowTohigh)
+#genGraph(lowTohighFilename, 6, lowTohighFilenameImg, titleGraph)
+
